@@ -5,16 +5,17 @@ from constPS import *
 context = zmq.Context()
 s = context.socket(zmq.SUB)
 
-# Conecta ao publisher pelo IP real da máquina que o executa
 p = "tcp://" + HOST + ":" + PORT
 s.connect(p)
-s.setsockopt_string(zmq.SUBSCRIBE, "TIME")
 
-print(f"[Subscriber] Conectado a {p}, aguardando mensagens...")
+# Assina todos os tópicos
+topics = ["TIME", "TEMP", "STATUS"]
+for topic in topics:
+    s.setsockopt_string(zmq.SUBSCRIBE, topic)
 
-# Aguarda conexão estabilizar para não perder mensagens
+print(f"[Subscriber] Conectado a {p}, aguardando mensagens de: {', '.join(topics)}")
 time.sleep(1)
 
-for i in range(5):
+while True:
     msg = s.recv()
     print("[Subscriber] Recebido:", msg.decode())
