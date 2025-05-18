@@ -1,12 +1,20 @@
 import zmq
-from constPS import * #-
+import time
+from constPS import *
 
 context = zmq.Context()
-s = context.socket(zmq.SUB)          # create a subscriber socket
-p = "tcp://"+ HOST +":"+ PORT        # how and where to communicate
-s.connect(p)                         # connect to the server
-s.setsockopt_string(zmq.SUBSCRIBE, "TIME")  # subscribe to TIME messages
+s = context.socket(zmq.SUB)
 
-for i in range(5):  # Five iterations
-	time = s.recv()   # receive a message
-	print (bytes.decode(time))
+# Conecta ao publisher pelo IP real da máquina que o executa
+p = "tcp://" + HOST + ":" + PORT
+s.connect(p)
+s.setsockopt_string(zmq.SUBSCRIBE, "TIME")
+
+print(f"[Subscriber] Conectado a {p}, aguardando mensagens...")
+
+# Aguarda conexão estabilizar para não perder mensagens
+time.sleep(1)
+
+for i in range(5):
+    msg = s.recv()
+    print("[Subscriber] Recebido:", msg.decode())
