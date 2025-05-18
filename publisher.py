@@ -1,11 +1,17 @@
-import zmq, time
-from constPS import * #-
+import zmq
+import time
+from constPS import *
 
 context = zmq.Context()
-s = context.socket(zmq.PUB)        # create a publisher socket
-p = "tcp://"+HOST+":"+ PORT      # how and where to communicate
-s.bind(p)                          # bind socket to the address
+s = context.socket(zmq.PUB)
+
+# Bind para todas as interfaces
+p = "tcp://0.0.0.0:" + PORT
+s.bind(p)
+print(f"[Publisher] Servidor ativo em {p}")
+
 while True:
-	time.sleep(5)                    # wait every 5 seconds
-	msg = str.encode("TIME " + time.asctime())
-	s.send(msg) # publish the current time
+    time.sleep(5)
+    msg = str.encode("TIME " + time.strftime("%H:%M:%S"))
+    print("[Publisher] Enviando:", msg.decode())
+    s.send(msg)
